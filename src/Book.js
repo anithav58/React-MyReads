@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import BookShelfChanger from './BookShelfChanger';
+import * as BooksAPI from './BooksAPI';
 
 class Book extends Component {
+	handleChange = shelf => {
+		BooksAPI.update(this.props.book, shelf).then(() => {
+			!!this.props.updateShelf && this.props.updateShelf(this.props.book, shelf);
+		});
+	};
 	render() {
-		const { title, authors, imageLinks } = this.props.book;
-		console.log(imageLinks);
+		const { id, title, authors, imageLinks } = this.props.book;
+		const checkImageLinks = !!imageLinks ? imageLinks.smallThumbnail : '';
 		return (
 			<li>
 				<div className="book">
@@ -14,13 +20,13 @@ class Book extends Component {
 							style={{
 								width: 128,
 								height: 193,
-								backgroundImage: `url(${imageLinks.smallThumbnail})`,
+								backgroundImage: `url(${checkImageLinks})`,
 							}}
 						/>
-						<BookShelfChanger />
+						<BookShelfChanger handleChange={this.handleChange} />
 					</div>
 					<div className="book-title">{title}</div>
-					<div className="book-authors">{authors.join(', ')}</div>
+					<div className="book-authors">{!!authors ? authors.join(', ') : ''}</div>
 				</div>
 			</li>
 		);
