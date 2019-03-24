@@ -5,25 +5,40 @@ import * as BooksAPI from './BooksAPI';
 import Book from './Book';
 
 class ListBooks extends Component {
+	static propTypes = {
+		filterBooks: PropTypes.array,
+		query: PropTypes.string,
+	};
 	state = {
 		query: '',
 		filterBooks: [],
 	};
-	// componentDidMount() {
-	// 	BooksAPI.search(this.state.query).then(filterBooks => {
-	// 		this.setState({
-	// 			filterBooks,
-	// 		});
-	// 	});
-	// }
+
 	updateQuery = query => {
 		BooksAPI.search(query).then(filterBooks => {
-			this.setState({
-				filterBooks,
-			});
+			if (!!filterBooks && filterBooks.length > 0) {
+				const result = filterBooks.map(filterBook => {
+					const bookMatch = this.props.myBooks.find(myBook => myBook.id === filterBook.id);
+					if (!bookMatch) {
+						return filterBook;
+					} else {
+						return {
+							...filterBook,
+							shelf: bookMatch.shelf,
+						};
+					}
+				});
+				this.setState({
+					filterBooks: result,
+				});
+			} else {
+				this.setState({
+					filterBooks: [],
+				});
+			}
 		});
 		this.setState(() => ({
-			query: query.trim(),
+			query: query,
 		}));
 	};
 	clearQuery = () => {
@@ -32,11 +47,6 @@ class ListBooks extends Component {
 
 	render() {
 		const { query, filterBooks } = this.state;
-		//const { books } = this.props;
-
-		// const filterBooks =
-		// 	query === '' ? books : books.filter(b => b.title.toLowerCase().includes(query.toLowerCase()));
-		console.log('FilteredBooks', filterBooks);
 		return (
 			<div className="search-books">
 				<div className="search-books-bar">
@@ -52,7 +62,7 @@ class ListBooks extends Component {
 							value={query}
 							onChange={event => this.updateQuery(event.target.value)}
 						/>
-						{!!filterBooks && filterBooks.length > 0 ? (
+						{filterBooks.length > 0 ? (
 							<div className="search-books-results">
 								<ol className="books-grid">
 									{filterBooks.map(filterBook => (
@@ -61,7 +71,7 @@ class ListBooks extends Component {
 								</ol>
 							</div>
 						) : (
-							<h2>No results found. Please enter a new search term</h2>
+							query.length > 0 && <h4>No results found. Please enter a new search term</h4>
 						)}
 					</div>
 				</div>

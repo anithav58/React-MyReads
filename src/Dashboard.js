@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import * as BooksAPI from './BooksAPI';
 import BookShelf from './BookShelf';
-import ListBooks from './ListBooks';
 import { Link } from 'react-router-dom';
 
 class Dashboard extends Component {
 	state = {
-		books: [],
+		//books: [],
 		shelves: [
 			{
 				title: 'Current Reading',
@@ -23,24 +21,18 @@ class Dashboard extends Component {
 		],
 	};
 	componentDidMount() {
-		BooksAPI.getAll().then(books => {
-			this.setState({
-				books,
-			});
-		});
+		this.props.fetchBooks();
 	}
 
 	updateShelf = (updatedBook, toShelf, fromShelf) => {
-		const updatedBooks = this.state.books.map(book => {
+		const updatedBooks = this.props.books.map(book => {
 			if (book.shelf === fromShelf && updatedBook.id === book.id) {
 				return { ...book, shelf: toShelf };
 			} else {
 				return { ...book };
 			}
 		});
-		this.setState(() => ({
-			books: updatedBooks,
-		}));
+		this.props.updateBooks(updatedBooks);
 	};
 
 	render() {
@@ -56,7 +48,7 @@ class Dashboard extends Component {
 								<BookShelf
 									key={shelf.key}
 									shelf={shelf}
-									books={this.state.books}
+									books={this.props.books}
 									updateShelf={this.updateShelf}
 								/>
 							))}

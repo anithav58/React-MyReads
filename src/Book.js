@@ -4,12 +4,13 @@ import * as BooksAPI from './BooksAPI';
 
 class Book extends Component {
 	handleChange = shelf => {
-		BooksAPI.update(this.props.book, shelf).then(() => {
-			!!this.props.updateShelf && this.props.updateShelf(this.props.book, shelf);
+		const { book, updateShelf } = this.props;
+		BooksAPI.update(book, shelf).then(() => {
+			!!updateShelf && updateShelf(book, shelf);
 		});
 	};
 	render() {
-		const { id, title, authors, imageLinks } = this.props.book;
+		const { title, authors, imageLinks, shelf } = this.props.book;
 		const checkImageLinks = !!imageLinks ? imageLinks.smallThumbnail : '';
 		return (
 			<li>
@@ -23,7 +24,7 @@ class Book extends Component {
 								backgroundImage: `url(${checkImageLinks})`,
 							}}
 						/>
-						<BookShelfChanger handleChange={this.handleChange} />
+						<BookShelfChanger shelf={shelf} handleChange={this.handleChange} />
 					</div>
 					<div className="book-title">{title}</div>
 					<div className="book-authors">{!!authors ? authors.join(', ') : ''}</div>
