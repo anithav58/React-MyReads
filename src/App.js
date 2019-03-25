@@ -4,26 +4,18 @@ import './App.css';
 import Dashboard from './Dashboard';
 import ListBooks from './ListBooks';
 import * as BooksAPI from './BooksAPI';
-import PropTypes from 'prop-types';
 
 class BooksApp extends Component {
-	static propTypes = {
-		books: PropTypes.array,
-	};
 	state = {
 		books: [],
 	};
 
-	fetchAllBooks = () => {
+	componentDidMount() {
 		BooksAPI.getAll().then(books => {
 			this.setState({
 				books,
 			});
 		});
-	};
-
-	componentDidMount() {
-		this.fetchAllBooks();
 	}
 
 	updateBooks = updatedBooks => {
@@ -32,25 +24,18 @@ class BooksApp extends Component {
 		}));
 	};
 
-	fetchBooks = () => {
-		this.fetchAllBooks();
-	};
-
 	render() {
 		return (
 			<div className="app">
 				<Route
 					exact
 					path="/"
-					render={() => (
-						<Dashboard
-							books={this.state.books}
-							updateBooks={this.updateBooks}
-							fetchBooks={this.fetchBooks}
-						/>
-					)}
+					render={() => <Dashboard books={this.state.books} updateBooks={this.updateBooks} />}
 				/>
-				<Route path="/search" render={({ history }) => <ListBooks myBooks={this.state.books} />} />
+				<Route
+					path="/search"
+					render={({ history }) => <ListBooks myBooks={this.state.books} updateBooks={this.updateBooks} />}
+				/>
 			</div>
 		);
 	}

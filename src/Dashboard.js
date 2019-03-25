@@ -1,37 +1,27 @@
 import React, { Component } from 'react';
 import BookShelf from './BookShelf';
 import { Link } from 'react-router-dom';
+import { getUpdatedBooks } from './utils';
+
+const SHELVES = [
+	{
+		title: 'Current Reading',
+		key: 'currentlyReading',
+	},
+	{
+		title: 'Want To Read',
+		key: 'wantToRead',
+	},
+	{
+		title: 'Read',
+		key: 'read',
+	},
+];
 
 class Dashboard extends Component {
-	state = {
-		//books: [],
-		shelves: [
-			{
-				title: 'Current Reading',
-				key: 'currentlyReading',
-			},
-			{
-				title: 'Want To Read',
-				key: 'wantToRead',
-			},
-			{
-				title: 'Read',
-				key: 'read',
-			},
-		],
-	};
-	componentDidMount() {
-		this.props.fetchBooks();
-	}
+	updateShelf = (updatedBook, toShelf) => {
+		const updatedBooks = getUpdatedBooks(updatedBook, this.props.books, toShelf);
 
-	updateShelf = (updatedBook, toShelf, fromShelf) => {
-		const updatedBooks = this.props.books.map(book => {
-			if (book.shelf === fromShelf && updatedBook.id === book.id) {
-				return { ...book, shelf: toShelf };
-			} else {
-				return { ...book };
-			}
-		});
 		this.props.updateBooks(updatedBooks);
 	};
 
@@ -44,7 +34,7 @@ class Dashboard extends Component {
 					</div>
 					<div className="list-books-content">
 						<div>
-							{this.state.shelves.map(shelf => (
+							{SHELVES.map(shelf => (
 								<BookShelf
 									key={shelf.key}
 									shelf={shelf}
